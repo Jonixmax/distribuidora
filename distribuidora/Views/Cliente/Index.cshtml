@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Realizar Pedido";
+    var productos = ViewBag.Productos as List<distribuidora.Models.DB.Producto>;
+}
+
+<h2>Realizar un Pedido</h2>
+
+<form asp-action="RealizarPedido" method="post">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Precio.ToString("C")</td>
+                    <td>@producto.Stock</td>
+                    <td>
+                        <input type="number" name="cantidades[@producto.Id]" class="form-control" min="0" max="@producto.Stock" value="0" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Confirmar Pedido</button>
+</form>
+
+
+
+@if (ViewBag.Pedidos != null && ((List<distribuidora.Models.DB.Pedido>)ViewBag.Pedidos).Any())
+{
+    <h3 class="mt-5">Historial de Pedidos</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in (List<distribuidora.Models.DB.Pedido>)ViewBag.Pedidos)
+            {
+                <tr>
+                    <td>@(pedido.Fecha.HasValue? pedido.Fecha.Value.ToString("dd/MM/yyyy HH:mm") : "Sin fecha")</td>
+                    <td>
+                        <span class="badge @(pedido.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-success")">
+                            @pedido.Estado
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted mt-5">Aún no has realizado ningún pedido.</p>
+}
+

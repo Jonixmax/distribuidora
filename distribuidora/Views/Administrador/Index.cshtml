@@ -1,0 +1,168 @@
+﻿@model List<distribuidora.Models.DB.Pedido>
+@{
+    ViewBag.Title = "Panel de Administrador";
+    var productos = ViewBag.Productos as List<distribuidora.Models.DB.Producto>;
+}
+
+<h2>Panel de Administración</h2>
+
+<!-- Botones de navegación -->
+<div class="mb-4">
+    <button class="btn btn-outline-primary" onclick="mostrarSeccion('seccionPedidos')">Pedidos</button>
+    <button class="btn btn-outline-success" onclick="mostrarSeccion('seccionProductos')">Productos</button>
+    <button class="btn btn-outline-secondary" onclick="mostrarSeccion('seccionUsuarios')">Usuarios</button>
+</div>
+
+<!-- Sección: Pedidos -->
+<div id="seccionPedidos" class="seccion">
+    <h3>Pedidos Registrados</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id Pedido</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model)
+            {
+                <tr>
+                    <td>@pedido.Id</td>
+                    <td>@pedido.IdUsuario</td>
+                    <td>@(pedido.Fecha.HasValue? pedido.Fecha.Value.ToString("dd/MM/yyyy HH:mm") : "Sin fecha")</td>
+                    <td>
+                        <span class="badge @(pedido.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-success")">
+                            @pedido.Estado
+                        </span>
+                    </td>
+                    <td>
+                        <form asp-action="CambiarEstado" asp-route-id="@pedido.Id" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-primary">Cambiar Estado</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Sección: Productos -->
+<div id="seccionProductos" class="seccion" style="display:none;">
+    <h3>Gestión de Productos</h3>
+
+    <div class="row">
+        <!-- Agregar producto nuevo -->
+        <div class="col-md-6">
+            <h5>Agregar Producto</h5>
+            <form asp-action="AgregarProducto" method="post">
+                <div class="mb-2">
+                    <label>Nombre:</label>
+                    <input type="text" name="Nombre" class="form-control" required />
+                </div>
+                <div class="mb-2">
+                    <label>Descripción:</label>
+                    <textarea name="Descripcion" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Precio:</label>
+                    <input type="number" step="0.01" name="Precio" class="form-control" required />
+                </div>
+                <div class="mb-2">
+                    <label>Stock Inicial:</label>
+                    <input type="number" name="Stock" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-success">Agregar</button>
+            </form>
+        </div>
+
+        <!-- Actualizar stock -->
+        <div class="col-md-6">
+            <h5>Actualizar Stock</h5>
+            <form asp-action="ActualizarStock" method="post">
+                <div class="mb-2">
+                    <label>Producto:</label>
+                    <select name="IdProducto" class="form-control" required>
+                        <option value="">Seleccione</option>
+                        @foreach (var p in productos)
+                        {
+                            <option value="@p.Id">@p.Nombre</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Cantidad:</label>
+                    <input type="number" name="Cantidad" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla productos existentes -->
+    <h5 class="mt-4">Productos Existentes</h5>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Id</td>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Descripcion</td>
+                    <td>₡@producto.Precio.ToString("N2")</td>
+                    <td>@producto.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Sección: Registrar Usuario -->
+<div id="seccionUsuarios" class="seccion" style="display:none;">
+    <h3>Registrar Nuevo Usuario</h3>
+    <form asp-action="RegistrarUsuario" method="post" class="col-md-6">
+        <div class="mb-2">
+            <label>Nombre:</label>
+            <input type="text" name="Nombre" class="form-control" required />
+        </div>
+        <div class="mb-2">
+            <label>Email:</label>
+            <input type="email" name="Email" class="form-control" required />
+        </div>
+        <div class="mb-2">
+            <label>Contraseña:</label>
+            <input type="password" name="Contraseña" class="form-control" required />
+        </div>
+        <div class="mb-2">
+            <label>Rol:</label>
+            <select name="Rol" class="form-control" required>
+                <option value="Administrador">Administrador</option>
+                <option value="Cliente">Cliente</option>
+
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Registrar</button>
+    </form>
+</div>
+
+<!-- Script para cambiar entre secciones -->
+<script>
+    function mostrarSeccion(id) {
+        document.querySelectorAll('.seccion').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+
+    mostrarSeccion('seccionPedidos');
+</script>

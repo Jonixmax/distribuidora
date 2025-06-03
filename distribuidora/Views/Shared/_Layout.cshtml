@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - distribuidora</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/distribuidora.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Encabezado personalizado -->
+    <header class="bg-primary text-white py-4 mb-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="display-4 mb-0">La Distribuidora</h1>
+
+            @* Mostrar botón solo si NO estamos en Home/Index *@
+            @if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
+                        (ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+                        ViewContext.RouteData.Values["action"]?.ToString() == "Login")))
+            {
+                <a asp-controller="Home" asp-action="Index" class="btn btn-danger">Cerrar Sesión</a>
+            }
+
+        </div>
+    </header>
+
+
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container text-center">
+            &copy; 2025 - La Distribuidora
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
